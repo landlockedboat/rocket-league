@@ -14,7 +14,7 @@ internal enum SpeedType
     KPH
 }
 
-public class RocketCarController : MonoBehaviour
+public class RocketCarMotorController : MonoBehaviour
 {
     [SerializeField]
     private CarDriveType m_CarDriveType = CarDriveType.FourWheelDrive;
@@ -167,7 +167,8 @@ public class RocketCarController : MonoBehaviour
         m_WheelColliders[0].steerAngle = m_SteerAngle;
         m_WheelColliders[1].steerAngle = m_SteerAngle;
 
-        //SteerHelper();
+        SteerHelper();
+        //Debug.Log("Accel " + accel + " Footbrake " + footbrake);
         ApplyDrive(accel, footbrake);
         CapSpeed();
 
@@ -218,6 +219,7 @@ public class RocketCarController : MonoBehaviour
         {
             case CarDriveType.FourWheelDrive:
                 thrustTorque = accel * (m_CurrentTorque / 4f);
+                //Debug.Log("Adding torque to wheels " + thrustTorque);
                 for (int i = 0; i < 4; i++)
                 {
                     m_WheelColliders[i].motorTorque = thrustTorque;

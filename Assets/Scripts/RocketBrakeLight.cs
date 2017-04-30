@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class RocketBrakeLight : MonoBehaviour
 {
-    public RocketCarController car; // reference to the car controller, must be dragged in inspector
+    public RocketCarMotorController car; // reference to the car controller, must be dragged in inspector
 
     private Renderer m_Renderer;
 

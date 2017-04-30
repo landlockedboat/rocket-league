@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
 
-public class RocketCarBoostController : MonoBehaviour {
+public class RocketCarBoostController : MonoBehaviour
+{
 
     [SerializeField]
     float boostForce = 500;
@@ -16,15 +17,11 @@ public class RocketCarBoostController : MonoBehaviour {
         _rigidbody = GetComponent<Rigidbody>();
     }
 
-    void FixedUpdate()
+    public void Boost()
     {
-        if (CrossPlatformInputManager.GetButton("Fire3"))
-        {
-            // Let us assume perfectly vertical jumps
-            Vector3 force = Vector3.forward;
-            force = transform.rotation * force;
-            force *= boostForce;
-            _rigidbody.AddForce(force, ForceMode.Impulse);
-        }
+        Vector3 force = Vector3.forward;
+        force = transform.rotation * force;
+        force *= boostForce;
+        _rigidbody.AddForce(force, ForceMode.Impulse);
     }
 }
