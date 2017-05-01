@@ -6,17 +6,32 @@ using UnityEngine;
 [RequireComponent(typeof(RocketCarMotorController))]
 [RequireComponent(typeof(RocketCarBoostController))]
 [RequireComponent(typeof(RocketCarJumpController))]
+[RequireComponent(typeof(RocketCarRotationController))]
 
 public class RocketCarManager : MonoBehaviour
 {
+    [SerializeField]
+    bool isPlayer = false;
+
     float closeEnoughForGroundDetection = 1f;
     string floorTag = "Floor";
+    bool grounded;
 
     bool canDoSecondJump = true;
 
     private RocketCarMotorController carMotor;
     private RocketCarBoostController carBoost;
     private RocketCarJumpController carJump;
+    private RocketCarRotationController carRotation;
+
+    public bool Grounded
+    {
+        get
+        {
+            return grounded;
+        }
+
+    }
 
     private void Awake()
     {
@@ -24,6 +39,7 @@ public class RocketCarManager : MonoBehaviour
         carMotor = GetComponent<RocketCarMotorController>();
         carBoost = GetComponent<RocketCarBoostController>();
         carJump = GetComponent<RocketCarJumpController>();
+        carRotation = GetComponent<RocketCarRotationController>();
     }
 
     public void TreatInput(float horizontalAxis, float verticalAxis,
@@ -31,12 +47,16 @@ public class RocketCarManager : MonoBehaviour
         bool jumpButton, bool boostButton)
     {
 
-        bool grounded = IsGrounded();
+        grounded = CheckIfGrounded();
 
         if (grounded)
         {
             carMotor.Move(
                 horizontalAxis, verticalAxis, verticalAxis, handbrake);
+        }
+        else
+        {
+            carRotation.ApplyRotation(horizontalAxis, verticalAxis);
         }
 
         if(jumpButton)
@@ -65,7 +85,7 @@ public class RocketCarManager : MonoBehaviour
 
     }
 
-    public bool IsGrounded()
+    bool CheckIfGrounded()
     {
         Vector3 downVec = (transform.up * -1).normalized;
         RaycastHit hit;
@@ -74,13 +94,27 @@ public class RocketCarManager : MonoBehaviour
         //    transform.position + downVec * closeEnoughForGroundDetection,
         //    Color.green, 2);
 
+        bool ret = false;
         if (Physics.Raycast(transform.position, downVec, out hit, closeEnoughForGroundDetection))
         {
             if (hit.transform.tag == floorTag)
             {
-                return true;
+                ret = true;
             }
         }
-        return false;
+
+        if (isPlayer)
+        {
+            if(grounded && !ret)
+            {
+                EventManager.TriggerCallback("OnPlayerUnGrounded");
+            }
+            else if(!grounded && ret)
+            {
+                EventManager.TriggerCallback("OnPlayerGrounded");
+            }
+        }
+
+        return ret;
     }
 }
