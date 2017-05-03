@@ -5,16 +5,16 @@ using UnityEngine;
 
 public class EventManager {
 
-    static Dictionary<string, Action> callbacks;
-    static bool isInit = false;
+    Dictionary<string, Action> callbacks;
+    bool isInit = false;
 
-    static void Init()
+    void Init()
     {
         callbacks = new Dictionary<string, Action>();
         isInit = true;
     }
 
-    public static void RegisterCallback(string s, Action a)
+    public void RegisterCallback(string s, Action a)
     {
         if (!isInit)
             Init();
@@ -31,7 +31,7 @@ public class EventManager {
         }
     }
 
-    public static void UnRegisterCallback(string s, Action a)
+    public void UnRegisterCallback(string s, Action a)
     {
         if (!isInit)
             Init();
@@ -46,7 +46,7 @@ public class EventManager {
         }
     }
 
-    public static void TriggerCallback(string s)
+    public void TriggerCallback(string s)
     {
         if (!isInit)
             Init();

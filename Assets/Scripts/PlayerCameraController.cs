@@ -10,13 +10,15 @@ public class PlayerCameraController : MonoBehaviour {
     float groundedRotationDamping = 3;
     [SerializeField]
     float unGroundedRotationDamping = 0;
+    [SerializeField]
+    RocketCarManager playerCar;
 
     SmoothFollow _smoothFollow;
 
     // Use this for initialization
     void Start () {
-        EventManager.RegisterCallback("OnPlayerGrounded", OnPlayerGrounded);
-        EventManager.RegisterCallback("OnPlayerUnGrounded", OnPlayerUnGrounded);
+        playerCar.Events.RegisterCallback("OnGrounded", OnPlayerGrounded);
+        playerCar.Events.RegisterCallback("OnUnGrounded", OnPlayerUnGrounded);
         _smoothFollow = GetComponent<SmoothFollow>();
     }
 

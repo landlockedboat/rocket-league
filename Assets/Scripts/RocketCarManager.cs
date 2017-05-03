@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,7 +13,21 @@ public class RocketCarManager : MonoBehaviour
 {
     [SerializeField]
     bool isPlayer = false;
+    [SerializeField]
+    bool isBlueTeam = false;
+    [Header("Boost properties")]
+    [SerializeField]
+    float maxBoostTime = 100f;
+    [SerializeField]
+    float startingBoostTime = 30f;
+    float currentBoostTime;
+    bool isBoosting = false;
 
+    [Header("Object references")]
+    [SerializeField]
+    GameObject carVisuals;
+
+    // For ground detection
     float closeEnoughForGroundDetection = 1f;
     string floorTag = "Floor";
     bool grounded;
@@ -24,13 +39,14 @@ public class RocketCarManager : MonoBehaviour
     private RocketCarJumpController carJump;
     private RocketCarRotationController carRotation;
 
-    public bool Grounded
+    EventManager events;
+
+    public EventManager Events
     {
         get
         {
-            return grounded;
+            return events;
         }
-
     }
 
     private void Awake()
@@ -40,6 +56,24 @@ public class RocketCarManager : MonoBehaviour
         carBoost = GetComponent<RocketCarBoostController>();
         carJump = GetComponent<RocketCarJumpController>();
         carRotation = GetComponent<RocketCarRotationController>();
+
+        // We change the color of the car depending wether it is 
+        // in the blue team
+        // or not.
+        MeshRenderer _rend = carVisuals.GetComponent<MeshRenderer>();
+        if (isBlueTeam)
+        {
+            _rend.material.color = Color.blue;
+        }
+        else
+        {
+            _rend.material.color = Color.red;
+        }
+
+        events = new EventManager();
+
+        currentBoostTime = startingBoostTime;
+
     }
 
     public void TreatInput(float horizontalAxis, float verticalAxis,
@@ -80,7 +114,23 @@ public class RocketCarManager : MonoBehaviour
 
         if(boostButton)
         {
-            carBoost.Boost();
+            if(currentBoostTime > 0)
+            {
+                // Trigger the "begin boosting" event
+                if (!isBoosting)
+                {
+                    isBoosting = true;
+                    events.TriggerCallback("OnBoostBegin");
+                }
+                carBoost.Boost();
+                currentBoostTime -= Time.deltaTime;
+            }
+            
+        }
+        else if (isBoosting)
+        {
+            isBoosting = false;
+            events.TriggerCallback("OnBoostEnd");
         }
 
     }
@@ -105,13 +155,13 @@ public class RocketCarManager : MonoBehaviour
 
         if (isPlayer)
         {
-            if(grounded && !ret)
+            if (grounded && !ret)
             {
-                EventManager.TriggerCallback("OnPlayerUnGrounded");
+                events.TriggerCallback("OnUnGrounded");
             }
-            else if(!grounded && ret)
+            else if (!grounded && ret)
             {
-                EventManager.TriggerCallback("OnPlayerGrounded");
+                events.TriggerCallback("OnGrounded");
             }
         }
 
