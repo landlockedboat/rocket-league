@@ -1,23 +1,8 @@
 ﻿using System;
 using UnityEngine;
 
-internal enum CarDriveType
-{
-    FrontWheelDrive,
-    RearWheelDrive,
-    FourWheelDrive
-}
-
-internal enum SpeedType
-{
-    MPH,
-    KPH
-}
-
 public class RocketCarMotorController : MonoBehaviour
 {
-    [SerializeField]
-    private CarDriveType m_CarDriveType = CarDriveType.FourWheelDrive;
     [SerializeField]
     private WheelCollider[] m_WheelColliders = new WheelCollider[4];
     [SerializeField]
@@ -42,8 +27,6 @@ public class RocketCarMotorController : MonoBehaviour
     private float m_MaxHandbrakeTorque;
     [SerializeField]
     private float m_Downforce = 100f;
-    [SerializeField]
-    private SpeedType m_SpeedType;
     [SerializeField]
     private float m_Topspeed = 200;
     [SerializeField]
@@ -194,48 +177,20 @@ public class RocketCarMotorController : MonoBehaviour
     private void CapSpeed()
     {
         float speed = m_Rigidbody.velocity.magnitude;
-        switch (m_SpeedType)
-        {
-            case SpeedType.MPH:
-
-                speed *= 2.23693629f;
-                if (speed > m_Topspeed)
-                    m_Rigidbody.velocity = (m_Topspeed / 2.23693629f) * m_Rigidbody.velocity.normalized;
-                break;
-
-            case SpeedType.KPH:
-                speed *= 3.6f;
-                if (speed > m_Topspeed)
-                    m_Rigidbody.velocity = (m_Topspeed / 3.6f) * m_Rigidbody.velocity.normalized;
-                break;
-        }
+        speed *= 3.6f;
+        if (speed > m_Topspeed)
+            m_Rigidbody.velocity = (m_Topspeed / 3.6f) * m_Rigidbody.velocity.normalized;
     }
 
 
     private void ApplyDrive(float accel, float footbrake)
     {
         float thrustTorque;
-        switch (m_CarDriveType)
+        thrustTorque = accel * (m_CurrentTorque / 4f);
+        //Debug.Log("Adding torque to wheels " + thrustTorque);
+        for (int i = 0; i < 4; i++)
         {
-            case CarDriveType.FourWheelDrive:
-                thrustTorque = accel * (m_CurrentTorque / 4f);
-                //Debug.Log("Adding torque to wheels " + thrustTorque);
-                for (int i = 0; i < 4; i++)
-                {
-                    m_WheelColliders[i].motorTorque = thrustTorque;
-                }
-                break;
-
-            case CarDriveType.FrontWheelDrive:
-                thrustTorque = accel * (m_CurrentTorque / 2f);
-                m_WheelColliders[0].motorTorque = m_WheelColliders[1].motorTorque = thrustTorque;
-                break;
-
-            case CarDriveType.RearWheelDrive:
-                thrustTorque = accel * (m_CurrentTorque / 2f);
-                m_WheelColliders[2].motorTorque = m_WheelColliders[3].motorTorque = thrustTorque;
-                break;
-
+            m_WheelColliders[i].motorTorque = thrustTorque;
         }
 
         for (int i = 0; i < 4; i++)
@@ -324,33 +279,12 @@ public class RocketCarMotorController : MonoBehaviour
     private void TractionControl()
     {
         WheelHit wheelHit;
-        switch (m_CarDriveType)
+        // loop through all wheels
+        for (int i = 0; i < 4; i++)
         {
-            case CarDriveType.FourWheelDrive:
-                // loop through all wheels
-                for (int i = 0; i < 4; i++)
-                {
-                    m_WheelColliders[i].GetGroundHit(out wheelHit);
+            m_WheelColliders[i].GetGroundHit(out wheelHit);
 
-                    AdjustTorque(wheelHit.forwardSlip);
-                }
-                break;
-
-            case CarDriveType.RearWheelDrive:
-                m_WheelColliders[2].GetGroundHit(out wheelHit);
-                AdjustTorque(wheelHit.forwardSlip);
-
-                m_WheelColliders[3].GetGroundHit(out wheelHit);
-                AdjustTorque(wheelHit.forwardSlip);
-                break;
-
-            case CarDriveType.FrontWheelDrive:
-                m_WheelColliders[0].GetGroundHit(out wheelHit);
-                AdjustTorque(wheelHit.forwardSlip);
-
-                m_WheelColliders[1].GetGroundHit(out wheelHit);
-                AdjustTorque(wheelHit.forwardSlip);
-                break;
+            AdjustTorque(wheelHit.forwardSlip);
         }
     }
 

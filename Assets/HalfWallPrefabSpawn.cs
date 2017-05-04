@@ -12,6 +12,9 @@ public class HalfWallPrefabSpawn : MonoBehaviour {
 
     void OnEnable()
     {
+        if (transform.childCount >= 5)
+            return;
+
         for (int i = 0; i < fragments.Length; i++)
         {
             if (fragments[i] != null)
@@ -36,6 +39,16 @@ public class HalfWallPrefabSpawn : MonoBehaviour {
                 DestroyImmediate(fragments[i]);
                 fragments[i] = null;
             }
+        }
+        // In case there is something else to be destroyed
+        if (transform.childCount > 0)
+        {
+            Debug.LogWarning("Deleting children of " + name +
+                transform.childCount + " childs left.");
+        }
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            DestroyImmediate(transform.GetChild(i).gameObject);
         }
     }
 }

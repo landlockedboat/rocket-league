@@ -13,6 +13,9 @@ public class BigWallPrefabSpawn : MonoBehaviour
 
     void OnEnable()
     {
+        if (transform.childCount >= 10)
+            return;
+
         for (int i = 0; i < fragments.Length; i++)
         {
             if (fragments[i] != null)
@@ -24,6 +27,7 @@ public class BigWallPrefabSpawn : MonoBehaviour
             GameObject go = Instantiate(wallFragment, transform, true);
             go.transform.localPosition = new Vector3(
                 0, 0, i * 5f - 22.5f);
+            go.transform.rotation = transform.rotation;
             fragments[i] = go;
         }
     }

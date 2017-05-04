@@ -3,50 +3,60 @@ using System.Collections;
 
 public class SmoothFollow : MonoBehaviour
 {
-    // From http://answers.unity3d.com/questions/1235121/moving-the-camera-smoothly-to-players-current-posi.html
-    // By: ankit-tiks007
-
-    // The target we are following
-    public Transform target;
+    [SerializeField]
+    Transform target;
     // The distance in the x-z plane to the target
-    public float distance = 10.0f;
+    [SerializeField]
+    float distance = 10.0f;
     // the height we want the camera to be above the target
-    public float height = 5.0f;
-    // How much we 
-    public float heightDamping = 2.0f;
-    public float rotationDamping = 3.0f;
+    [SerializeField]
+    float height = 5.0f;
+    [SerializeField]
+    float movementDamping = 3f;
+    [SerializeField]
+    bool followRotation = true;
 
-    // Place the script in the Camera-Control group in the component menu
-    [AddComponentMenu("Camera-Control/Smooth Follow")]
-
-    void LateUpdate()
+    public bool FollowRotation
     {
-        // Early out if we don't have a target
-        if (!target) return;
+        get
+        {
+            return followRotation;
+        }
 
-        // Calculate the current rotation angles
-        float wantedRotationAngle = target.eulerAngles.y;
-        float wantedHeight = target.position.y + height;
+        set
+        {
+            followRotation = value;
+        }
+    }
 
-        float currentRotationAngle = transform.eulerAngles.y;
-        float currentHeight = transform.position.y;
+    void FixedUpdate()
+    {
+        if (!target)
+        {
+            return;
+        }
 
-        // Damp the rotation around the y-axis
-        currentRotationAngle = Mathf.LerpAngle(currentRotationAngle, wantedRotationAngle, rotationDamping * Time.deltaTime);
 
-        // Damp the height
-        currentHeight = Mathf.Lerp(currentHeight, wantedHeight, heightDamping * Time.deltaTime);
+        Vector3 desiredPos = target.position;
 
-        // Convert the angle into a rotation
-        Quaternion currentRotation = Quaternion.Euler(0, currentRotationAngle, 0);
+        if (followRotation)
+        {
+            // Adding position relative to the destination
+            desiredPos +=
+                target.rotation * new Vector3(0, height, -distance);
+        }
+        else
+        {
+            desiredPos +=
+                new Vector3(0, height, -distance);
+        }
 
-        // Set the position of the camera on the x-z plane to:
-        // distance meters behind the target
-        transform.position = target.position;
-        transform.position -= currentRotation * Vector3.forward * distance;
+        desiredPos = Vector3.Lerp(
+            transform.position,
+            desiredPos,
+            movementDamping * Time.fixedDeltaTime);
 
-        // Set the height of the camera
-        transform.position = new Vector3(transform.position.x, currentHeight, transform.position.z);
+        transform.position = desiredPos;
 
         // Always look at the target
         transform.LookAt(target);

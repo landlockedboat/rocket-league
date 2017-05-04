@@ -7,10 +7,6 @@ using UnityEngine;
 public class PlayerCameraController : MonoBehaviour {
 
     [SerializeField]
-    float groundedRotationDamping = 3;
-    [SerializeField]
-    float unGroundedRotationDamping = 0;
-    [SerializeField]
     RocketCarManager playerCar;
 
     SmoothFollow _smoothFollow;
@@ -24,11 +20,11 @@ public class PlayerCameraController : MonoBehaviour {
 
     void OnPlayerGrounded()
     {
-        _smoothFollow.rotationDamping = groundedRotationDamping;
+        _smoothFollow.FollowRotation = true;
     }
 
     void OnPlayerUnGrounded()
     {
-        _smoothFollow.rotationDamping = unGroundedRotationDamping;
+        _smoothFollow.FollowRotation = false;
     }
 }
