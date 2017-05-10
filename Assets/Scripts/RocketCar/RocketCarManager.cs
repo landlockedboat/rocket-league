@@ -135,6 +135,15 @@ public class RocketCarManager : MonoBehaviour
 
     }
 
+    // We add a value ammount of boost time to our car
+    public void AddBoost(float value)
+    {
+        currentBoostTime += value;
+        // We make sure our boost time is always at most maxBoostTime
+        currentBoostTime = Mathf.Clamp(
+            currentBoostTime, 0, maxBoostTime);
+    }
+
     bool CheckIfGrounded()
     {
         Vector3 downVec = (transform.up * -1).normalized;
