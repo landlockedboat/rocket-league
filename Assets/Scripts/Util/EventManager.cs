@@ -25,8 +25,8 @@ public class EventManager {
         }
         else
         {
-            Debug.Log("RegisterCallback: Callback " + s + " does not exist. \n" +
-                "Creating new one.");
+            // Debug.Log("RegisterCallback: Callback " + s + " does not exist. \n" +
+            //    "Creating new one.");
             callbacks.Add(s, a);
         }
     }
@@ -42,7 +42,7 @@ public class EventManager {
         }
         else
         {
-            Debug.Log("UnRegisterCallback: Callback " + s + " does not exist.");
+            // Debug.Log("UnRegisterCallback: Callback " + s + " does not exist.");
         }
     }
 
@@ -51,7 +51,7 @@ public class EventManager {
         if (!isInit)
             Init();
 
-        Debug.Log("TriggerCallback: " + s);
+        // Debug.Log("TriggerCallback: " + s);
 
         if (callbacks.ContainsKey(s))
         {
@@ -59,7 +59,7 @@ public class EventManager {
         }
         else
         {
-            Debug.Log("TriggerCallback: Callback " + s + " does not exist.");
+            // Debug.Log("TriggerCallback: Callback " + s + " does not exist.");
         }
     }
 

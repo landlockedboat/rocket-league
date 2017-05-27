@@ -29,6 +29,19 @@ public class SmoothFollow : MonoBehaviour
         }
     }
 
+    public Transform Target
+    {
+        get
+        {
+            return target;
+        }
+
+        set
+        {
+            target = value;
+        }
+    }
+
     void FixedUpdate()
     {
         if (!target)
