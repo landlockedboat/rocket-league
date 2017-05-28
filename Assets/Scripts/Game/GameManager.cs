@@ -9,6 +9,12 @@ public class GameManager : MonoBehaviour
     [Header("Game configuration")]
     [SerializeField]
     float maxPlaytime = 300f;
+    [SerializeField]
+    float startDownTime = 3f;
+    float currentStartDownTime;
+    [SerializeField]
+    float scoredDownTime = 3f;
+    float currentScoredDownTime;
 
     [SerializeField]
     bool playerIsBlue;
@@ -44,7 +50,12 @@ public class GameManager : MonoBehaviour
     int blueScore = 0;
     int redScore = 0;
 
+    int carsPerTeam;
+
     GameObject ballGameObject;
+
+    List<GameObject> blueCars = new List<GameObject>();
+    List<GameObject> redCars = new List<GameObject>();
 
     static GameManager instance;
     GameState currentState;
@@ -103,6 +114,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public float CurrentStartDownTime
+    {
+        get
+        {
+            return currentStartDownTime;
+        }
+    }
+
     public Vector3 GetGoalPos(bool isBlue)
     {
         if (isBlue)
@@ -121,7 +140,46 @@ public class GameManager : MonoBehaviour
 
     void ChangeState(GameState state)
     {
+        switch (state)
+        {
+            case GameState.Start:
+                currentStartDownTime = startDownTime;
+                ResetPositions();
+                Debug.Log("OnGameResetted");
+                events.TriggerCallback("OnGameResetted");
+                break;
+            case GameState.Playing:
+                Debug.Log("OnGameStarted");
+                events.TriggerCallback("OnGameStarted");
+                break;
+            case GameState.Scored:
+                currentScoredDownTime = scoredDownTime;
+                break;
+            case GameState.GameOver:
+                Debug.Log("OnGameOver");
+                events.TriggerCallback("OnGameOver");
+                break;
+            default:
+                break;
+        }
         currentState = state;
+    }
+
+    void ResetPositions()
+    {
+        for (int i = 0; i < carsPerTeam; ++i)
+        {
+            blueCars[i].transform.position = blueCarSpawns[i].position;
+            blueCars[i].transform.rotation = blueCarSpawns[i].rotation;
+        }
+
+        for (int i = 0; i < carsPerTeam; ++i)
+        {
+            redCars[i].transform.position = redCarSpawns[i].position;
+            redCars[i].transform.rotation = redCarSpawns[i].rotation;
+        }
+
+        ballGameObject.transform.position = ballSpawn.position;
     }
 
     void Awake()
@@ -129,8 +187,16 @@ public class GameManager : MonoBehaviour
         instance = FindObjectOfType<GameManager>();
         events = new EventManager();
         currentPlaytime = maxPlaytime;
+
+        carsPerTeam = SceneData.Instance.GetData("cars_per_team");
+        if (carsPerTeam < 0)
+        {
+            carsPerTeam = 3;
+        }
+
         SpawnCars();
         SpawnBall();
+
     }
 
     private void Start()
@@ -161,20 +227,25 @@ public class GameManager : MonoBehaviour
         switch (currentState)
         {
             case GameState.Start:
-                ChangeState(GameState.Countdown);
-                break;
-            case GameState.Countdown:
-                ChangeState(GameState.Playing);
+                currentStartDownTime -= Time.deltaTime;
+                if(currentStartDownTime <= 0)
+                {
+                    ChangeState(GameState.Playing);                    
+                }
                 break;
             case GameState.Playing:
                 currentPlaytime -= Time.deltaTime;
                 if(currentPlaytime <= 0)
                 {
-                    Debug.Log("No time, buddy");
                     ChangeState(GameState.GameOver);
                 }
                 break;
             case GameState.Scored:
+                currentScoredDownTime -= Time.deltaTime;
+                if (currentScoredDownTime <= 0)
+                {
+                    ChangeState(GameState.Start);                    
+                }
                 break;
             default:
                 break;
@@ -186,6 +257,7 @@ public class GameManager : MonoBehaviour
         // Debug.Log("Blue player scored!");
         ++blueScore;
         events.TriggerCallback("OnBlueScored");
+        ChangeState(GameState.Scored);
     }
 
     void OnRedScored()
@@ -193,6 +265,7 @@ public class GameManager : MonoBehaviour
         // Debug.Log("Red player scored!");
         ++redScore;
         events.TriggerCallback("OnRedScored");
+        ChangeState(GameState.Scored);
     }
 
     void SpawnBall()
@@ -206,31 +279,45 @@ public class GameManager : MonoBehaviour
     {
         GameObject go =
             Instantiate(carPrefab, pivot.position, pivot.rotation);
-        go.GetComponent<RocketCarManager>().IsBlueTeam = isBlue;
+        RocketCarManager rcm = go.GetComponent<RocketCarManager>();
+        rcm.IsBlueTeam = isBlue;
+        rcm.CarVisualsIndex = Random.Range(0,
+            SceneData.Instance.GetData("car_models"));
         go.AddComponent<RocketCarAIControl>();
+
+        if (isBlue)
+        {
+            blueCars.Add(go);
+        }
+        else
+        {
+            redCars.Add(go);
+        }
     }
 
     void SpawnPlayerCar(bool isBlue, Transform pivot)
     {
         GameObject go =
             Instantiate(carPrefab, pivot.position, pivot.rotation);
-        go.GetComponent<RocketCarManager>().IsBlueTeam = isBlue;
+        RocketCarManager rcm = go.GetComponent<RocketCarManager>();
+        rcm.IsBlueTeam = isBlue;
+        rcm.CarVisualsIndex = SceneData.Instance.GetData("picked_car");
         go.AddComponent<RocketCarPlayerControl>();
+        if (isBlue)
+        {
+            blueCars.Add(go);
+        }
+        else
+        {
+            redCars.Add(go);
+        }
     }
 
     void SpawnCars()
     {
-        int playerIndex = 0;
-        if (playerIsBlue)
-        {
-            playerIndex = Random.Range(0, blueCarSpawns.Length);
-        }
-        else
-        {
-            playerIndex = Random.Range(0, redCarSpawns.Length);
-        }
+        int playerIndex = Random.Range(0, carsPerTeam);
 
-        for (int i = 0; i < blueCarSpawns.Length; ++i)
+        for (int i = 0; i < carsPerTeam; ++i)
         {
             if (playerIsBlue && spawnPlayer && playerIndex == i)
             {
@@ -242,7 +329,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < redCarSpawns.Length; ++i)
+        for (int i = 0; i < carsPerTeam; ++i)
         {
             if (!playerIsBlue && spawnPlayer && playerIndex == i)
             {
@@ -258,14 +345,8 @@ public class GameManager : MonoBehaviour
 
 public enum GameState
 {
-    // A fictional state just before the countdown of the game
     Start,
-    // The countdown before hitting the ball
-    Countdown,
-    // Generic playing state
     Playing,
-    // When someone scores a goal
     Scored,
-    // When time reaches 0
     GameOver,
 }

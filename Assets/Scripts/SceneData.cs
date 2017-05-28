@@ -31,7 +31,12 @@ public class SceneData : MonoBehaviour {
         get
         {
             if (sceneDataDict == null)
+            {
                 sceneDataDict = new Dictionary<string, int>();
+                sceneDataDict["car_models"] = 3;
+                sceneDataDict["picked_car"] = 0;
+            }
+                
             return sceneDataDict;
         }
 

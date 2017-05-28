@@ -48,7 +48,6 @@ public class RocketCarAIControl : MonoBehaviour
         friendlyGoalPos = GameManager.Instance.GetGoalPos(carManager.IsBlueTeam);
 
         InvokeRepeating("CheckIfBehidTheBall", 0, checkTime);
-
     }
 
     private void CheckIfBehidTheBall()

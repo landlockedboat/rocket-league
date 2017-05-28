@@ -36,6 +36,11 @@ public class RocketCarManager : MonoBehaviour
 
     bool canDoSecondJump = true;
 
+    // Triggered as soon as the game starts
+    bool canMove = false;
+
+    Rigidbody _rigidbody;
+
     private RocketCarMotorController carMotor;
     private RocketCarBoostController carBoost;
     private RocketCarJumpController carJump;
@@ -87,6 +92,7 @@ public class RocketCarManager : MonoBehaviour
 
     private void Awake()
     {
+        _rigidbody = GetComponent<Rigidbody>();
         // get the car controller
         carMotor = GetComponent<RocketCarMotorController>();
         carBoost = GetComponent<RocketCarBoostController>();
@@ -115,6 +121,21 @@ public class RocketCarManager : MonoBehaviour
         {
             _rend.material.color = Color.red;
         }
+        GameManager.Instance.Events.RegisterCallback("OnGameStarted", OnGameStarted);
+        GameManager.Instance.Events.RegisterCallback("OnGameResetted", OnGameResetted);
+    }
+
+    void OnGameStarted()
+    {
+        canMove = true;
+    }
+
+    void OnGameResetted()
+    {
+        _rigidbody.velocity = Vector3.zero;
+        _rigidbody.angularVelocity = Vector3.zero;
+        carMotor.Move(0, 0, 0, 0);
+        canMove = false;
     }
 
     private void Update()
@@ -126,6 +147,11 @@ public class RocketCarManager : MonoBehaviour
         float handbrake,
         bool jumpButton, bool boostButton)
     {
+        if (!canMove)
+        {
+            return;
+        }
+
         if (isGrounded)
         {
             carMotor.Move(

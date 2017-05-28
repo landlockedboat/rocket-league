@@ -30,8 +30,4 @@ public class BoostEffect : MonoBehaviour {
             t.enabled = false;
         }
     }
-
-    void Update () {
-		
-	}
 }
