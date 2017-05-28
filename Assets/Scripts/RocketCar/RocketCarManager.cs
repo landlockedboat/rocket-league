@@ -28,7 +28,7 @@ public class RocketCarManager : MonoBehaviour
     // For ground detection
     float closeEnoughForGroundDetection = 1f;
     string floorTag = "Floor";
-    bool grounded;
+    bool isGrounded;
 
     bool canDoSecondJump = true;
 
@@ -57,6 +57,14 @@ public class RocketCarManager : MonoBehaviour
         set
         {
             isBlueTeam = value;
+        }
+    }
+
+    public bool IsGrounded
+    {
+        get
+        {
+            return isGrounded;
         }
     }
 
@@ -90,14 +98,16 @@ public class RocketCarManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        isGrounded = CheckIfGrounded();
+    }
+
     public void TreatInput(float horizontalAxis, float verticalAxis,
         float handbrake,
         bool jumpButton, bool boostButton)
     {
-
-        grounded = CheckIfGrounded();
-
-        if (grounded)
+        if (isGrounded)
         {
             carMotor.Move(
                 horizontalAxis, verticalAxis, verticalAxis, handbrake);
@@ -109,12 +119,12 @@ public class RocketCarManager : MonoBehaviour
 
         if (jumpButton)
         {
-            if (grounded || canDoSecondJump)
+            if (isGrounded || canDoSecondJump)
             {
                 // Basically here we test if
                 // the car is grounded or can do the second
                 // jump
-                if (grounded)
+                if (isGrounded)
                 {
                     canDoSecondJump = true;
                 }
@@ -176,11 +186,11 @@ public class RocketCarManager : MonoBehaviour
             }
         }
 
-        if (grounded && !ret)
+        if (isGrounded && !ret)
         {
             events.TriggerCallback("OnUnGrounded");
         }
-        else if (!grounded && ret)
+        else if (!isGrounded && ret)
         {
             events.TriggerCallback("OnGrounded");
         }

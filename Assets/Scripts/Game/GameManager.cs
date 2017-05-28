@@ -7,12 +7,15 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [Header("Game configuration")]
+    [SerializeField]
     float maxPlaytime = 300f;
 
     [SerializeField]
     bool playerIsBlue;
     [SerializeField]
-    bool spawnEnemies;
+    bool spawnEnemies = true;
+    [SerializeField]
+    bool spawnPlayer = true;
 
     [Header("Car spawns")]
     [SerializeField]
@@ -20,19 +23,28 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     Transform[] redCarSpawns;
 
+    [Header("Goal controllers")]
     [SerializeField]
     GoalController blueGoalController;
     [SerializeField]
     GoalController redGoalController;
 
+    [SerializeField]
+    Transform ballSpawn;
 
-    [Header("Object references")]
+
+    [Header("Prefab references")]
     [SerializeField]
     GameObject carPrefab;
+    [SerializeField]
+    GameObject ballPrefab;
+
 
     float currentPlaytime = 0;
     int blueScore = 0;
     int redScore = 0;
+
+    GameObject ballGameObject;
 
     static GameManager instance;
     GameState currentState;
@@ -83,6 +95,30 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public GameObject BallGameObject
+    {
+        get
+        {
+            return ballGameObject;
+        }
+    }
+
+    public Vector3 GetGoalPos(bool isBlue)
+    {
+        if (isBlue)
+        {
+            if(blueGoalController)
+                return blueGoalController.transform.position;
+            return Vector3.zero;
+        }
+        else
+        {
+            if(redGoalController)
+                return redGoalController.transform.position;
+            return Vector3.zero;
+        }
+    }
+
     void ChangeState(GameState state)
     {
         currentState = state;
@@ -94,6 +130,7 @@ public class GameManager : MonoBehaviour
         events = new EventManager();
         currentPlaytime = maxPlaytime;
         SpawnCars();
+        SpawnBall();
     }
 
     private void Start()
@@ -104,10 +141,18 @@ public class GameManager : MonoBehaviour
             blueGoalController.Events.
                 RegisterCallback("OnScored", OnBlueScored);
         }
+        else
+        {
+            Debug.LogWarning("No blue goal detected");
+        }
         if (redGoalController)
         {
             redGoalController.Events.
                 RegisterCallback("OnScored", OnRedScored);
+        }
+        else
+        {
+            Debug.LogWarning("No red goal detected");
         }
     }
 
@@ -150,6 +195,13 @@ public class GameManager : MonoBehaviour
         events.TriggerCallback("OnRedScored");
     }
 
+    void SpawnBall()
+    {
+        GameObject go =
+            Instantiate(ballPrefab, ballSpawn.position, ballSpawn.rotation);
+        ballGameObject = go;
+    }
+
     void SpawnAICar(bool isBlue, Transform pivot)
     {
         GameObject go =
@@ -180,11 +232,11 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < blueCarSpawns.Length; ++i)
         {
-            if (playerIsBlue && playerIndex == i)
+            if (playerIsBlue && spawnPlayer && playerIndex == i)
             {
                 SpawnPlayerCar(true, blueCarSpawns[i]);
             }
-            else
+            else if(spawnEnemies)
             {
                 SpawnAICar(true, blueCarSpawns[i]);
             }
@@ -192,11 +244,11 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < redCarSpawns.Length; ++i)
         {
-            if (!playerIsBlue && playerIndex == i)
+            if (!playerIsBlue && spawnPlayer && playerIndex == i)
             {
                 SpawnPlayerCar(false, redCarSpawns[i]);
             }
-            else
+            else if(spawnEnemies)
             {
                 SpawnAICar(false, redCarSpawns[i]);
             }

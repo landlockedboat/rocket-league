@@ -4,23 +4,26 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-public class UITimeManager : MonoBehaviour {
+public class UITimeManager : MonoBehaviour
+{
 
     Text scoreText;
     GameManager gameManager;
 
-	void Start () {
+    void Start()
+    {
         scoreText = transform.GetChild(0).
             GetComponent<Text>();
         gameManager = GameManager.Instance;
     }
 
 
-	
-	void Update () {
+
+    void Update()
+    {
         float timer = gameManager.CurrentPlaytime;
-        Debug.Log(timer);
-        int minutes =   Mathf.RoundToInt(timer / 60);
+        // Debug.Log(timer);
+        int minutes = Mathf.RoundToInt(timer / 60);
         int seconds = Mathf.RoundToInt((int)timer % 60);
 
         scoreText.text = minutes.ToString() + ":" +
