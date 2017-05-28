@@ -23,7 +23,11 @@ public class RocketCarManager : MonoBehaviour
 
     [Header("Object references")]
     [SerializeField]
-    GameObject carVisuals;
+    GameObject[] carBodyPrefabs;
+    [SerializeField]
+    int carVisualsIndex = 0;
+
+    GameObject carBody;
 
     // For ground detection
     float closeEnoughForGroundDetection = 1f;
@@ -68,6 +72,19 @@ public class RocketCarManager : MonoBehaviour
         }
     }
 
+    public int CarVisualsIndex
+    {
+        get
+        {
+            return carVisualsIndex;
+        }
+
+        set
+        {
+            carVisualsIndex = value;
+        }
+    }
+
     private void Awake()
     {
         // get the car controller
@@ -87,7 +104,9 @@ public class RocketCarManager : MonoBehaviour
         // We change the color of the car depending wether it is 
         // in the blue team
         // or not.
-        MeshRenderer _rend = carVisuals.GetComponent<MeshRenderer>();
+        carBody = Instantiate(carBodyPrefabs[carVisualsIndex],
+            transform.position, transform.rotation, transform);
+        MeshRenderer _rend = carBody.GetComponent<MeshRenderer>();
         if (isBlueTeam)
         {
             _rend.material.color = Color.blue;
