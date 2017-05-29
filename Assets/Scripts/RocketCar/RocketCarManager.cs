@@ -132,7 +132,7 @@ public class RocketCarManager : MonoBehaviour
         // or not.
         carBody = Instantiate(carBodyPrefabs[carVisualsIndex],
             transform.position, transform.rotation, transform);
-        MeshRenderer _rend = carBody.GetComponent<MeshRenderer>();
+        MeshRenderer _rend = carBody.transform.GetChild(0).GetComponent<MeshRenderer>();
         if (isBlueTeam)
         {
             _rend.material.color = Color.blue;
