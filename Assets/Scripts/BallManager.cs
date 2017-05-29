@@ -13,6 +13,11 @@ public class BallManager : MonoBehaviour {
     [SerializeField]
     float jumpForce = 20000;
 
+    [SerializeField]
+    GameObject[] visualPrefabs;
+    [SerializeField]
+    Transform visualPivot;
+
     Vector3 blueGoal;
     Vector3 redGoal;
 
@@ -20,29 +25,41 @@ public class BallManager : MonoBehaviour {
     float distanceToBlueGoal = float.PositiveInfinity;
 
     SphereCollider _sphereCollider;
-    MeshRenderer _renderer;
+    GameObject visuals;
     Rigidbody _rigidbody;
     ParticleSystem _particleSystem;
 
-    void Start () {
-        blueGoal = GameManager.Instance.GetGoalPos(true);
-        redGoal = GameManager.Instance.GetGoalPos(false);
-        InvokeRepeating("UpdateDistanceToGoals", 0, updateDistanceTime);
-        GameManager.Instance.Events.RegisterCallback("OnBlueScored", OnScored);
-        GameManager.Instance.Events.RegisterCallback("OnRedScored", OnScored);
-        GameManager.Instance.Events.RegisterCallback("OnGameResetted", OnGameResetted);
-        GameManager.Instance.Events.RegisterCallback("OnGameOver", OnGameOver);
+    GameManager gameManager;
 
+    void Start () {
+        gameManager = GameManager.Instance;
+        if(gameManager)
+        {
+            blueGoal = gameManager.GetGoalPos(true);
+            redGoal = gameManager.GetGoalPos(false);
+            InvokeRepeating("UpdateDistanceToGoals", 0, updateDistanceTime);
+            gameManager.Events.RegisterCallback("OnBlueScored", OnScored);
+            gameManager.Events.RegisterCallback("OnRedScored", OnScored);
+            gameManager.Events.RegisterCallback("OnGameResetted", OnGameResetted);
+            gameManager.Events.RegisterCallback("OnGameOver", OnGameOver);
+        }
+        
         _sphereCollider = GetComponent<SphereCollider>();
-        _renderer = GetComponentInChildren<MeshRenderer>();
+        visuals = transform.GetChild(0).gameObject;
         _rigidbody = GetComponent<Rigidbody>();
         _particleSystem = GetComponent<ParticleSystem>();
+
+        int randomVisualIndex = Random.Range(0, visualPrefabs.Length);
+
+        Instantiate(visualPrefabs[randomVisualIndex], visualPivot.position,
+            visualPivot.rotation, visualPivot);
+
     }
 
     void OnScored()
     {
         _sphereCollider.enabled = false;
-        _renderer.enabled = false;
+        visuals.SetActive(false);
         _rigidbody.isKinematic = true;
         _particleSystem.Play();
 
@@ -70,7 +87,7 @@ public class BallManager : MonoBehaviour {
     void OnGameResetted()
     {
         _sphereCollider.enabled = true;
-        _renderer.enabled = true;
+        visuals.SetActive(true);
         _rigidbody.isKinematic = false;
         _particleSystem.Stop();
         _particleSystem.time = 0;

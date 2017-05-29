@@ -266,7 +266,7 @@ public class GameManager : MonoBehaviour
                     SceneData.Instance.SetData("red_score", redScore);
                     SceneData.Instance.SetData("blue_score", blueScore);
                     SceneData.Instance.SetData("player_blue", playerIsBlue ? 1 : 0);
-                    LevelManager.LoadLevel(3);
+                    LevelManager.LoadLevel(4);
                 }
                 break;
             default:

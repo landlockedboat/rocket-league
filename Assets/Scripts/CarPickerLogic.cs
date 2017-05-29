@@ -60,7 +60,7 @@ public class CarPickerLogic : MonoBehaviour
     public void GoToMenu()
     {
         SceneData.Instance.SetData("picked_car", CurrentCar);
-        LevelManager.LoadLevel(0);
+        LevelManager.LoadLevel(1);
     }
 
     void Update()

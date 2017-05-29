@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: eafbb0489ffbb8b49ac022c1400758f1
+timeCreated: 1496041517
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: GN-KMBFont-UB-NewstyleKanaB
+  fontNames:
+  - GN-KMBFont-UB-NewstyleKanaB
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
