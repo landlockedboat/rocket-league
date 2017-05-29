@@ -38,7 +38,7 @@ public class PlayerCameraController : MonoBehaviour {
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.B))
+        if(Input.GetKeyDown(KeyCode.Space))
         {
             followingPlayer = !followingPlayer;
             _smoothFollow.enabled = followingPlayer;

@@ -11,6 +11,7 @@ public class CarPickerLogic : MonoBehaviour
 
     int currentCar = 0;
     int numberOfCarModels;
+    bool isBlue;
 
     GameObject pickedCar;
 
@@ -27,7 +28,7 @@ public class CarPickerLogic : MonoBehaviour
         }
     }
 
-    void UpdateCarToPick(int index)
+    void UpdateCarToPick(int index, bool isBlue)
     {
         Destroy(pickedCar);
         GameObject go =
@@ -35,20 +36,22 @@ public class CarPickerLogic : MonoBehaviour
             transform.rotation, transform);
         pickedCar = go;
         pickedCar.GetComponent<Rigidbody>().isKinematic = true;
+        pickedCar.GetComponent<RocketCarManager>().IsBlueTeam = isBlue;
         pickedCar.GetComponent<RocketCarManager>().CarVisualsIndex = index;
     }
 
     // Use this for initialization
     void Start()
     {
+        isBlue = SceneData.Instance.GetData("is_blue") == 0 ? false : true;
         numberOfCarModels = SceneData.Instance.GetData("car_models");
-        UpdateCarToPick(CurrentCar);
+        UpdateCarToPick(CurrentCar, isBlue);
     }
 
     public void NextCar()
     {
         ++CurrentCar;
-        UpdateCarToPick(CurrentCar);
+        UpdateCarToPick(CurrentCar, isBlue);
     }
 
     public void PreviousCar()
@@ -56,7 +59,14 @@ public class CarPickerLogic : MonoBehaviour
         --CurrentCar;
         if (CurrentCar < 0)
             CurrentCar = 2;
-        UpdateCarToPick(CurrentCar);
+        UpdateCarToPick(CurrentCar, isBlue);
+    }
+
+    public void ToggleColor()
+    {
+        isBlue = !isBlue;
+        SceneData.Instance.SetData("is_blue", isBlue ? 1 : 0);
+        UpdateCarToPick(CurrentCar, isBlue);
     }
 
     public void GoToMenu()

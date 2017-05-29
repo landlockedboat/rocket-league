@@ -221,6 +221,7 @@ public class RocketCarManager : MonoBehaviour
                     canDoSecondJump = false;
                 }
                 carJump.ApplyJumpForce();
+                events.TriggerCallback("OnJump");
             }
         }
 

@@ -19,7 +19,6 @@ public class GameManager : MonoBehaviour
     float gameOverDownTime = 3f;
     float currentGameOverDownTime;
 
-    [SerializeField]
     bool playerIsBlue;
     [SerializeField]
     bool spawnEnemies = true;
@@ -107,6 +106,10 @@ public class GameManager : MonoBehaviour
         get
         {
             return currentPlaytime;
+        }
+        set
+        {
+            currentPlaytime = value;
         }
     }
 
@@ -207,6 +210,8 @@ public class GameManager : MonoBehaviour
             carsPerTeam = 3;
         }
 
+        playerIsBlue = SceneData.Instance.GetData("is_blue") == 0 ? false : true;
+
         SpawnCars();
         SpawnBall();
     }
@@ -290,6 +295,20 @@ public class GameManager : MonoBehaviour
         ChangeState(GameState.Scored);
     }
 
+    public void AddBlueScore()
+    {
+        // Debug.Log("Blue player scored!");
+        ++blueScore;
+        events.TriggerCallback("OnScored");
+    }
+
+    public void AddRedScore()
+    {
+        // Debug.Log("Red player scored!");
+        ++redScore;
+        events.TriggerCallback("OnScored");
+    }
+
     void SpawnBall()
     {
         GameObject go =
@@ -338,9 +357,7 @@ public class GameManager : MonoBehaviour
 
     void SpawnCars()
     {
-        //int playerIndex = Random.Range(0, carsPerTeam);
-        //TODO FIX
-        int playerIndex = 0;
+        int playerIndex = Random.Range(0, carsPerTeam);
 
         for (int i = 0; i < carsPerTeam; ++i)
         {

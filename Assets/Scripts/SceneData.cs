@@ -36,6 +36,7 @@ public class SceneData : MonoBehaviour {
                 sceneDataDict["car_models"] = 3;
                 sceneDataDict["picked_car"] = 0;
                 sceneDataDict["sound"] = 1;
+                sceneDataDict["is_blue"] = 0;
             }
                 
             return sceneDataDict;

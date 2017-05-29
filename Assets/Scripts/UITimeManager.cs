@@ -23,7 +23,7 @@ public class UITimeManager : MonoBehaviour
     {
         float timer = gameManager.CurrentPlaytime;
         // Debug.Log(timer);
-        int minutes = Mathf.RoundToInt((timer + 30) / 60);
+        int minutes = Mathf.Clamp(Mathf.FloorToInt(timer / 60), 0, int.MaxValue);
         int seconds = Mathf.RoundToInt((int)timer % 60);
 
         scoreText.text = minutes.ToString() + ":" +

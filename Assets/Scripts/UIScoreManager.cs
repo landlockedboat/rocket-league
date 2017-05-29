@@ -19,6 +19,11 @@ public class UIScoreManager : MonoBehaviour {
         gameManager.Events.
             RegisterCallback("OnRedScored", OnRedScored);
 
+        gameManager.Events.
+            RegisterCallback("OnScored", OnBlueScored);
+        gameManager.Events.
+            RegisterCallback("OnScored", OnRedScored);
+
         // boohoo this is bad im crying
         // shut up
         blueScoreText = transform.GetChild(0).
