@@ -22,6 +22,7 @@ public class BallManager : MonoBehaviour {
     SphereCollider _sphereCollider;
     MeshRenderer _renderer;
     Rigidbody _rigidbody;
+    ParticleSystem _particleSystem;
 
     void Start () {
         blueGoal = GameManager.Instance.GetGoalPos(true);
@@ -30,10 +31,12 @@ public class BallManager : MonoBehaviour {
         GameManager.Instance.Events.RegisterCallback("OnBlueScored", OnScored);
         GameManager.Instance.Events.RegisterCallback("OnRedScored", OnScored);
         GameManager.Instance.Events.RegisterCallback("OnGameResetted", OnGameResetted);
+        GameManager.Instance.Events.RegisterCallback("OnGameOver", OnGameOver);
 
         _sphereCollider = GetComponent<SphereCollider>();
         _renderer = GetComponentInChildren<MeshRenderer>();
         _rigidbody = GetComponent<Rigidbody>();
+        _particleSystem = GetComponent<ParticleSystem>();
     }
 
     void OnScored()
@@ -41,6 +44,7 @@ public class BallManager : MonoBehaviour {
         _sphereCollider.enabled = false;
         _renderer.enabled = false;
         _rigidbody.isKinematic = true;
+        _particleSystem.Play();
 
         GameObject[] gos = GameObject.FindGameObjectsWithTag("Car");
 
@@ -58,11 +62,18 @@ public class BallManager : MonoBehaviour {
         }
     }
 
+    void OnGameOver()
+    {
+        _rigidbody.isKinematic = true;
+    }
+
     void OnGameResetted()
     {
         _sphereCollider.enabled = true;
         _renderer.enabled = true;
         _rigidbody.isKinematic = false;
+        _particleSystem.Stop();
+        _particleSystem.time = 0;
     }
 
 

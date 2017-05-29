@@ -17,7 +17,7 @@ public class RocketCarManager : MonoBehaviour
     [SerializeField]
     float maxBoostTime = 100f;
     [SerializeField]
-    float startingBoostTime = 30f;
+    float startingBoostTime = 5f;
     float currentBoostTime;
 
     bool isBoosting = false;
@@ -28,6 +28,8 @@ public class RocketCarManager : MonoBehaviour
     GameObject[] carBodyPrefabs;
     [SerializeField]
     int carVisualsIndex = 0;
+
+    GameManager gameManager;
 
     GameObject carBody;
 
@@ -92,6 +94,22 @@ public class RocketCarManager : MonoBehaviour
         }
     }
 
+    public float CurrentBoostTime
+    {
+        get
+        {
+            return currentBoostTime;
+        }
+    }
+
+    public float MaxBoostTime
+    {
+        get
+        {
+            return maxBoostTime;
+        }
+    }
+
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
@@ -123,13 +141,20 @@ public class RocketCarManager : MonoBehaviour
         {
             _rend.material.color = Color.red;
         }
-        GameManager.Instance.Events.RegisterCallback("OnGameStarted", OnGameStarted);
-        GameManager.Instance.Events.RegisterCallback("OnGameResetted", OnGameResetted);
-        GameManager.Instance.Events.RegisterCallback("OnGameOver", OnGameResetted);
+
+        gameManager = GameManager.Instance;
+
+        if(gameManager)
+        {
+            GameManager.Instance.Events.RegisterCallback("OnGameStarted", OnGameStarted);
+            GameManager.Instance.Events.RegisterCallback("OnGameResetted", OnGameResetted);
+            GameManager.Instance.Events.RegisterCallback("OnGameOver", OnGameResetted);
+        }
     }
 
     void OnGameStarted()
     {
+        _rigidbody.isKinematic = false;
         canMove = true;
     }
 
@@ -137,8 +162,11 @@ public class RocketCarManager : MonoBehaviour
     {
         _rigidbody.velocity = Vector3.zero;
         _rigidbody.angularVelocity = Vector3.zero;
+        _rigidbody.isKinematic = true;
         carMotor.Move(0, 0, 0, 0);
         canMove = false;
+
+        currentBoostTime = startingBoostTime;
     }
 
     private void Update()
@@ -209,7 +237,11 @@ public class RocketCarManager : MonoBehaviour
                 carBoost.Boost();
                 currentBoostTime -= Time.deltaTime;
             }
-
+            else if (isBoosting)
+            {
+                isBoosting = false;
+                events.TriggerCallback("OnBoostEnd");
+            }
         }
         else if (isBoosting)
         {

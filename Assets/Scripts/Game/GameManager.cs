@@ -56,6 +56,7 @@ public class GameManager : MonoBehaviour
     int carsPerTeam;
 
     GameObject ballGameObject;
+    GameObject playerGameObject;
 
     List<GameObject> blueCars = new List<GameObject>();
     List<GameObject> redCars = new List<GameObject>();
@@ -122,6 +123,14 @@ public class GameManager : MonoBehaviour
         get
         {
             return currentStartDownTime;
+        }
+    }
+
+    public GameObject PlayerGameObject
+    {
+        get
+        {
+            return playerGameObject;
         }
     }
 
@@ -254,6 +263,9 @@ public class GameManager : MonoBehaviour
                 currentGameOverDownTime -= Time.deltaTime;
                 if (currentGameOverDownTime <= 0)
                 {
+                    SceneData.Instance.SetData("red_score", redScore);
+                    SceneData.Instance.SetData("blue_score", blueScore);
+                    SceneData.Instance.SetData("player_blue", playerIsBlue ? 1 : 0);
                     LevelManager.LoadLevel(3);
                 }
                 break;
@@ -309,6 +321,7 @@ public class GameManager : MonoBehaviour
     {
         GameObject go =
             Instantiate(carPrefab, pivot.position, pivot.rotation);
+        playerGameObject = go;
         RocketCarManager rcm = go.GetComponent<RocketCarManager>();
         rcm.IsBlueTeam = isBlue;
         rcm.CarVisualsIndex = SceneData.Instance.GetData("picked_car");

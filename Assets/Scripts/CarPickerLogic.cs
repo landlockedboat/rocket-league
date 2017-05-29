@@ -10,7 +10,7 @@ public class CarPickerLogic : MonoBehaviour
     float rotationSpeed = 5f;
 
     int currentCar = 0;
-    int numberOfCarModels = SceneData.Instance.GetData("car_models");
+    int numberOfCarModels;
 
     GameObject pickedCar;
 
@@ -41,6 +41,7 @@ public class CarPickerLogic : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        numberOfCarModels = SceneData.Instance.GetData("car_models");
         UpdateCarToPick(CurrentCar);
     }
 

@@ -3,7 +3,6 @@ using System.Collections;
 
 public class SmoothFollow : MonoBehaviour
 {
-    [SerializeField]
     Transform target;
     // The distance in the x-z plane to the target
     [SerializeField]

@@ -49,7 +49,7 @@ public class SceneData : MonoBehaviour {
 
     public void SetData(string key, int value)
     {
-        if (!SceneDataDict.ContainsKey("key"))
+        if (!SceneDataDict.ContainsKey(key))
         {
             SceneDataDict.Add(key, value);
         }
