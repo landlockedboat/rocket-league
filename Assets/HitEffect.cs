@@ -33,6 +33,7 @@ public class HitEffect : MonoBehaviour {
 
         hitSource.time = 0;
         hitSource.pitch = Mathf.Clamp(Random.value, minPitch, maxPitch);
-        hitSource.Play();
+        if(SceneData.Instance.GetData("sound") == 1)
+            hitSource.Play();
     }
 }

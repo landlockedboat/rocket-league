@@ -18,8 +18,8 @@ public class AudioManager : MonoBehaviour {
     void Start () {
         bgSource = InitAudioSource(bgSound);
         bgSource.loop = true;
-        bgSource.volume = .1f;
-        bgSource.Play();
+        if (SceneData.Instance.GetData("sound") == 1)
+            bgSource.Play();
 
         goalSource = InitAudioSource(goalSound);
         gameManager = GameManager.Instance;
@@ -41,7 +41,8 @@ public class AudioManager : MonoBehaviour {
     void OnScored()
     {
         goalSource.time = .1f;
-        goalSource.Play();
+        if (SceneData.Instance.GetData("sound") == 1)
+            goalSource.Play();
     }
 
     void OnGameResetted()

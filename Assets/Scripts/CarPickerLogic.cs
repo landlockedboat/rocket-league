@@ -54,6 +54,8 @@ public class CarPickerLogic : MonoBehaviour
     public void PreviousCar()
     {
         --CurrentCar;
+        if (CurrentCar < 0)
+            CurrentCar = 2;
         UpdateCarToPick(CurrentCar);
     }
 

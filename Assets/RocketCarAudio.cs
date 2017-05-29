@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RocketCarAudio : MonoBehaviour {
+public class RocketCarAudio : MonoBehaviour
+{
     [SerializeField]
     AudioClip accelSound;
     AudioSource accelSource;
@@ -16,7 +17,8 @@ public class RocketCarAudio : MonoBehaviour {
     RocketCarManager _manager;
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         _manager = GetComponent<RocketCarManager>();
         _manager.Events.RegisterCallback("OnAccelerationBegin", OnAccelerationBegin);
         _manager.Events.RegisterCallback("OnAccelerationEnd", OnAccelerationEnd);
@@ -42,7 +44,8 @@ public class RocketCarAudio : MonoBehaviour {
 
     void OnAccelerationBegin()
     {
-        accelSource.Play();
+        if (SceneData.Instance.GetData("sound") == 1)
+            accelSource.Play();
     }
 
     void OnAccelerationEnd()
@@ -52,7 +55,8 @@ public class RocketCarAudio : MonoBehaviour {
 
     void OnBoostBegin()
     {
-        boostSource.Play();
+        if (SceneData.Instance.GetData("sound") == 1)
+            boostSource.Play();
     }
 
     void OnBoostEnd()
