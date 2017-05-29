@@ -19,7 +19,9 @@ public class RocketCarManager : MonoBehaviour
     [SerializeField]
     float startingBoostTime = 30f;
     float currentBoostTime;
+
     bool isBoosting = false;
+    bool isAccelerating = false;
 
     [Header("Object references")]
     [SerializeField]
@@ -123,6 +125,7 @@ public class RocketCarManager : MonoBehaviour
         }
         GameManager.Instance.Events.RegisterCallback("OnGameStarted", OnGameStarted);
         GameManager.Instance.Events.RegisterCallback("OnGameResetted", OnGameResetted);
+        GameManager.Instance.Events.RegisterCallback("OnGameOver", OnGameResetted);
     }
 
     void OnGameStarted()
@@ -150,6 +153,18 @@ public class RocketCarManager : MonoBehaviour
         if (!canMove)
         {
             return;
+        }
+
+        if(verticalAxis > 0 && !isAccelerating)
+        {
+            isAccelerating = true;
+            events.TriggerCallback("OnAccelerationBegin");
+        }
+
+        if(verticalAxis <= 0 && isAccelerating)
+        {
+            isAccelerating = false;
+            events.TriggerCallback("OnAccelerationEnd");
         }
 
         if (isGrounded)

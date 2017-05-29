@@ -15,6 +15,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     float scoredDownTime = 3f;
     float currentScoredDownTime;
+    [SerializeField]
+    float gameOverDownTime = 3f;
+    float currentGameOverDownTime;
 
     [SerializeField]
     bool playerIsBlue;
@@ -158,6 +161,7 @@ public class GameManager : MonoBehaviour
             case GameState.GameOver:
                 Debug.Log("OnGameOver");
                 events.TriggerCallback("OnGameOver");
+                currentGameOverDownTime = gameOverDownTime;
                 break;
             default:
                 break;
@@ -196,7 +200,6 @@ public class GameManager : MonoBehaviour
 
         SpawnCars();
         SpawnBall();
-
     }
 
     private void Start()
@@ -205,7 +208,7 @@ public class GameManager : MonoBehaviour
         if (blueGoalController)
         {
             blueGoalController.Events.
-                RegisterCallback("OnScored", OnBlueScored);
+                RegisterCallback("OnScored", OnRedScored);
         }
         else
         {
@@ -214,7 +217,7 @@ public class GameManager : MonoBehaviour
         if (redGoalController)
         {
             redGoalController.Events.
-                RegisterCallback("OnScored", OnRedScored);
+                RegisterCallback("OnScored", OnBlueScored);
         }
         else
         {
@@ -245,6 +248,13 @@ public class GameManager : MonoBehaviour
                 if (currentScoredDownTime <= 0)
                 {
                     ChangeState(GameState.Start);                    
+                }
+                break;
+            case GameState.GameOver:
+                currentGameOverDownTime -= Time.deltaTime;
+                if (currentGameOverDownTime <= 0)
+                {
+                    LevelManager.LoadLevel(3);
                 }
                 break;
             default:
@@ -315,7 +325,9 @@ public class GameManager : MonoBehaviour
 
     void SpawnCars()
     {
-        int playerIndex = Random.Range(0, carsPerTeam);
+        //int playerIndex = Random.Range(0, carsPerTeam);
+        //TODO FIX
+        int playerIndex = 0;
 
         for (int i = 0; i < carsPerTeam; ++i)
         {
