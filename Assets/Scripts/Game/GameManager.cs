@@ -160,18 +160,18 @@ public class GameManager : MonoBehaviour
             case GameState.Start:
                 currentStartDownTime = startDownTime;
                 ResetPositions();
-                Debug.Log("OnGameResetted");
+                // Debug.Log("OnGameResetted");
                 events.TriggerCallback("OnGameResetted");
                 break;
             case GameState.Playing:
-                Debug.Log("OnGameStarted");
+                // Debug.Log("OnGameStarted");
                 events.TriggerCallback("OnGameStarted");
                 break;
             case GameState.Scored:
                 currentScoredDownTime = scoredDownTime;
                 break;
             case GameState.GameOver:
-                Debug.Log("OnGameOver");
+                // Debug.Log("OnGameOver");
                 events.TriggerCallback("OnGameOver");
                 currentGameOverDownTime = gameOverDownTime;
                 break;
@@ -226,7 +226,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("No blue goal detected");
+            // Debug.LogWarning("No blue goal detected");
         }
         if (redGoalController)
         {
@@ -235,7 +235,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("No red goal detected");
+            // Debug.LogWarning("No red goal detected");
         }
     }
 

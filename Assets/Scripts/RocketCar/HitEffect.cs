@@ -26,7 +26,7 @@ public class HitEffect : MonoBehaviour {
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log(collision.gameObject.tag);
+        // Debug.Log(collision.gameObject.tag);
         _particleSystem.transform.position = collision.contacts[0].point;
         _particleSystem.time = 0;
         _particleSystem.Play();

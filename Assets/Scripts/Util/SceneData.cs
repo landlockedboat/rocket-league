@@ -65,7 +65,7 @@ public class SceneData : MonoBehaviour {
     {
         if (!SceneDataDict.ContainsKey(key))
         {
-            Debug.LogWarning("No key " + key);
+            // Debug.LogWarning("No key " + key);
             SceneDataDict.Add(key, -1);
         }
         return SceneDataDict[key];
